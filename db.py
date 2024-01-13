@@ -18,7 +18,7 @@ class Database:
         self.con.commit()
 
     def get_facts(self):
-        return self.cur.execute("SELECT fact FROM facts").fetchall()
+        return self.cur.execute("SELECT * FROM facts").fetchall()
 
     def total_facts(self):
         return self.cur.execute("SELECT COUNT(*) FROM facts").fetchone()[0]

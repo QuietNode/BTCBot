@@ -152,7 +152,7 @@ class General(commands.Cog):
 			bitcoin_fun_facts = self.fact_bank.get_facts()
 			random.shuffle(bitcoin_fun_facts)
 			for fact in bitcoin_fun_facts:
-				yield fact[0]
+				yield fact
 
 	@commands.command()
 	async def totalfacts(self, ctx):
@@ -160,7 +160,9 @@ class General(commands.Cog):
 
 	@commands.command()
 	async def ff(self, ctx):
-		await ctx.send(next(self.fact_generator))
+		id, fact, author, date = next(self.fact_generator)
+		embed = discord.Embed(title=f"Fun Fact #{id} authored at {date} by {author}", description=fact, color=0x00ff00)
+		await ctx.send(embed=embed)
 
 	@commands.command()
 	async def addfact(self, ctx):
