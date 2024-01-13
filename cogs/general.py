@@ -155,6 +155,10 @@ class General(commands.Cog):
 				yield fact[0]
 
 	@commands.command()
+	async def totalfacts(self, ctx):
+		await ctx.send("There are " + str(self.fact_bank.total_facts()) + " facts in the database.")
+
+	@commands.command()
 	async def ff(self, ctx):
 		await ctx.send(next(self.fact_generator))
 

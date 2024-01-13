@@ -19,3 +19,6 @@ class Database:
 
     def get_facts(self):
         return self.cur.execute("SELECT fact FROM facts").fetchall()
+
+    def total_facts(self):
+        return self.cur.execute("SELECT COUNT(*) FROM facts").fetchone()[0]
