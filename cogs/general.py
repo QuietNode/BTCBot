@@ -1,6 +1,9 @@
+import asyncio
 import hashlib
 import math
 import random
+
+import discord
 
 import BitcoinAPI as api
 from constants import ITEM_DICT, CURRENCY_FORMAT_DICT, BLACKLIST, BITCOIN_IN_SATS, FUN_FACTS, REMOVE_HELP, CHART_TYPES
@@ -151,6 +154,42 @@ class General(commands.Cog):
 	@commands.command()
 	async def ff(self, ctx):
 		await ctx.send(next(self.fact_generator))
+
+	@commands.command()
+	async def addfact(self, ctx):
+		author = ctx.message.author.name
+		fact = str(ctx.message.content[9:])
+
+		embed = discord.Embed(title="Vouch to add fact", description=fact, color=0x00ff00)
+		message = await ctx.send(embed=embed)
+
+		reaction_emoji = '👍'
+		await message.add_reaction(reaction_emoji)
+
+		def check(reaction, user):
+			if user == self.bot.user:
+				return False
+
+			if str(reaction.emoji) != reaction_emoji:
+				return False
+
+			approved_role = discord.utils.get(ctx.guild.roles, name="Approved User")
+			if approved_role in user.roles:
+				return True
+			else:
+				asyncio.create_task(reaction.remove(user))
+				return False
+
+		try:
+			reactions_count = 0
+			while reactions_count < 3:
+				reaction, user = await self.bot.wait_for('reaction_add', check=check)
+				reactions_count = reaction.count
+
+		except:
+			pass
+		await ctx.send("Fact added by " + author)
+		await message.delete()
 
 	def bin_to_hex(self, bin_str):
 		if len(bin_str) % 4 != 0 or any(bit not in '01' for bit in bin_str):
