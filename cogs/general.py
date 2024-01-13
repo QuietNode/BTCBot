@@ -170,6 +170,8 @@ class General(commands.Cog):
 		await message.add_reaction(reaction_emoji)
 
 		def check(reaction, user):
+			if reaction.message.id != message.id:
+				return False
 			if user == self.bot.user:
 				return False
 
