@@ -57,8 +57,21 @@ class FunFacts(commands.Cog):
 
         reaction_emoji = '👍'
         await message.add_reaction(reaction_emoji)
+        check = self.reaction_check(ctx, message, reaction_emoji)
+        try:
+            reactions_count = 0
+            while reactions_count < 3:
+                reaction, user = await self.bot.wait_for('reaction_add', check=check)
+                reactions_count = reaction.count
 
-        def check(reaction, user):
+        except:
+            pass
+        self.fact_bank.add_fact(fact, author, datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+        await ctx.send("Fact added by " + author)
+        await message.delete()
+
+    def reaction_check(self, ctx, message, reaction_emoji):
+        async def check(reaction, user):
             if reaction.message.id != message.id:
                 return False
             if user == self.bot.user:
@@ -78,18 +91,7 @@ class FunFacts(commands.Cog):
             else:
                 asyncio.create_task(reaction.remove(user))
                 return False
-
-        try:
-            reactions_count = 0
-            while reactions_count < 3:
-                reaction, user = await self.bot.wait_for('reaction_add', check=check)
-                reactions_count = reaction.count
-
-        except:
-            pass
-        self.fact_bank.add_fact(fact, author, datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
-        await ctx.send("Fact added by " + author)
-        await message.delete()
+        return check
 
 
 async def setup(bot):
