@@ -22,7 +22,13 @@ class FunFacts(commands.Cog):
             for fact in bitcoin_fun_facts:
                 yield fact
 
-    @commands.command()
+    @commands.group(invoke_without_command=True)
+    async def ff(self, ctx):
+        id, fact, author, date = next(self.fact_generator)
+        embed = discord.Embed(title=f"Fun Fact #{id} authored at {date} by {author}", description=fact, color=0x00ff00)
+        await ctx.send(embed=embed)
+
+    @ff.command(name="get")
     async def fact(self, ctx, *args):
         if len(args) == 0:
             await ctx.send("To use fact use the format: `!fact <id>`")
@@ -37,18 +43,12 @@ class FunFacts(commands.Cog):
         embed = discord.Embed(title=f"Fun Fact #{id} authored at {date} by {author}", description=fact, color=0x00ff00)
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def totalfacts(self, ctx):
+    @ff.command(name="total")
+    async def ff_total(self, ctx):
         await ctx.send("There are " + str(self.fact_bank.total_facts()) + " facts in the database.")
 
-    @commands.command()
-    async def ff(self, ctx):
-        id, fact, author, date = next(self.fact_generator)
-        embed = discord.Embed(title=f"Fun Fact #{id} authored at {date} by {author}", description=fact, color=0x00ff00)
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def addfact(self, ctx):
+    @ff.command(name="add")
+    async def ff_add(self, ctx):
         author = ctx.message.author.name
         fact = str(ctx.message.content[9:])
 
