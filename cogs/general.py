@@ -148,10 +148,10 @@ class General(commands.Cog):
 		await ctx.send(message_string)
 
 	def get_fact(self):
-		all_fact = self.fact_bank.get_facts()
 		while True:
-			random.shuffle(all_fact)
-			for fact in all_fact:
+			bitcoin_fun_facts = self.fact_bank.get_facts()
+			random.shuffle(bitcoin_fun_facts)
+			for fact in bitcoin_fun_facts:
 				yield fact[0]
 
 	@commands.command()
