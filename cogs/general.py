@@ -163,7 +163,7 @@ class General(commands.Cog):
 		author = ctx.message.author.name
 		fact = str(ctx.message.content[9:])
 
-		embed = discord.Embed(title="Vouch to add fact", description=fact, color=0x00ff00)
+		embed = discord.Embed(title="Two approved users required for approval.", description=fact, color=0x00ff00)
 		message = await ctx.send(embed=embed)
 
 		reaction_emoji = '👍'
@@ -178,7 +178,12 @@ class General(commands.Cog):
 			if str(reaction.emoji) != reaction_emoji:
 				return False
 
+			mod_role = discord.utils.get(ctx.guild.roles, name="mod")
+			if mod_role in user.roles:
+				reaction.count = reaction.count + 2
+				return True
 			approved_role = discord.utils.get(ctx.guild.roles, name="Approved User")
+
 			if approved_role in user.roles:
 				return True
 			else:
