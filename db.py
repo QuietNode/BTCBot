@@ -13,7 +13,7 @@ class Database:
             timestamp TEXT
         )""")
 
-    def add_fact(self, fact, author, timestamp):
+    def add_fact(self, fact: str, author: str , timestamp: str):
         self.cur.execute("INSERT INTO facts (fact, author, timestamp) VALUES (?, ?, ?)", (fact, author, timestamp))
         self.con.commit()
 
