@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import hashlib
 import math
 import random
@@ -12,6 +13,7 @@ import os
 from discord.ext import commands
 import requests
 import json
+from db import Database
 from random import randrange
 
 class General(commands.Cog):
@@ -19,6 +21,7 @@ class General(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.fact_generator = self.get_fact()
+		self.fact_bank = Database()
 
 	async def on_ready(self):
 		print("General commands loaded")
@@ -144,12 +147,12 @@ class General(commands.Cog):
 		message_string = "**Bitcoin ATH** is currently **${:,.2f}**".format(ath)
 		await ctx.send(message_string)
 
-	@staticmethod
-	def get_fact():
+	def get_fact(self):
+		all_fact = self.fact_bank.get_facts()
 		while True:
-			random.shuffle(FUN_FACTS)
-			for fact in FUN_FACTS:
-				yield fact
+			random.shuffle(all_fact)
+			for fact in all_fact:
+				yield fact[0]
 
 	@commands.command()
 	async def ff(self, ctx):
@@ -188,6 +191,7 @@ class General(commands.Cog):
 
 		except:
 			pass
+		self.fact_bank.add_fact(fact, author, datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
 		await ctx.send("Fact added by " + author)
 		await message.delete()
 

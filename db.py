@@ -16,3 +16,6 @@ class Database:
     def add_fact(self, fact, author, timestamp):
         self.cur.execute("INSERT INTO facts (fact, author, timestamp) VALUES (?, ?, ?)", (fact, author, timestamp))
         self.con.commit()
+
+    def get_facts(self):
+        return self.cur.execute("SELECT fact FROM facts").fetchall()
