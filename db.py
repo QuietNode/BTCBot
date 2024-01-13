@@ -22,3 +22,6 @@ class Database:
 
     def total_facts(self):
         return self.cur.execute("SELECT COUNT(*) FROM facts").fetchone()[0]
+
+    def get_fact(self, id: int):
+        return self.cur.execute("SELECT * FROM facts WHERE id = ?", (id,)).fetchone()

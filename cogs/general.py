@@ -155,6 +155,21 @@ class General(commands.Cog):
 				yield fact
 
 	@commands.command()
+	async def fact(self, ctx, *args):
+		if(len(args) == 0):
+			await ctx.send("To use fact use the format: `!fact <id>`")
+		try:
+			id = int(args[0])
+			if id < 0:
+				return await ctx.send("id must be a positive integer")
+		except ValueError as _:
+			return await ctx.send("Non-integer id")
+		fact_by_id = self.fact_bank.get_fact(id)
+		id, fact, author, date = fact_by_id
+		embed = discord.Embed(title=f"Fun Fact #{id} authored at {date} by {author}", description=fact, color=0x00ff00)
+		await ctx.send(embed=embed)
+
+	@commands.command()
 	async def totalfacts(self, ctx):
 		await ctx.send("There are " + str(self.fact_bank.total_facts()) + " facts in the database.")
 
