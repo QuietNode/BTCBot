@@ -40,6 +40,8 @@ class FunFacts(commands.Cog):
             return await ctx.send("Non-integer id")
         fact_by_id = self.fact_bank.get_fact(id)
         id, fact, author, date = fact_by_id
+        if id is None or fact is None:
+            return await ctx.send("Fact not found")
         embed = discord.Embed(title=f"Fun Fact #{id} authored at {date} by {author}", description=fact, color=0x00ff00)
         await ctx.send(embed=embed)
 
