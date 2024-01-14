@@ -77,6 +77,24 @@ class FunFacts(commands.Cog):
         self.fact_bank.update_fact(id, fact)
         await ctx.send(f"Entry updated.")
 
+    @ff.command(name="delete")
+    async def ff_delete(self, ctx, *args):
+        if len(args) != 1:
+            return await ctx.send("To use delete use the format: `!ff delete <id>`")
+        try:
+            id = int(args[0])
+            if id < 0:
+                return await ctx.send("id must be a positive integer")
+        except ValueError as _:
+            return await ctx.send("Non-integer id")
+        if not args:
+            return await ctx.send("To use delete use the format: `!ff delete <id>`")
+
+        await self.wait_for_reaction(ctx, "", id, f"Request to delete fact with id {id}.")
+
+        self.fact_bank.delete_fact(id)
+        await ctx.send(f"Entry deleted.")
+
     async def wait_for_reaction(self, ctx, fact, id, description):
         embed = discord.Embed(title=description, description=fact, color=0x00ff00)
         message = await ctx.send(embed=embed)

@@ -80,3 +80,13 @@ class Database:
         """
         self.__cur.execute("""UPDATE facts SET fact = ? WHERE id = ?""", (fact, id))
         self.__con.commit()
+
+    def delete_fact(self, id: int) -> None:
+        """
+        Deletes an existing fact.
+
+        Parameters:
+            id (int): The ID of the fact to delete.
+        """
+        self.__cur.execute("""DELETE FROM facts WHERE id = ?""", (id,))
+        self.__con.commit()
