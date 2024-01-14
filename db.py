@@ -15,10 +15,10 @@ class Database:
         Initializes the Database class by connecting to the SQLite database
         and creating the 'facts' table if it does not exist.
         """
-        self.con = sqlite3.connect('database.db')
-        self.cur = self.con.cursor()
+        self.__con = sqlite3.connect('database.db')
+        self.__cur = self.__con.cursor()
 
-        self.cur.execute("""CREATE TABLE IF NOT EXISTS facts (
+        self.__cur.execute("""CREATE TABLE IF NOT EXISTS facts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             fact TEXT,
             author TEXT,
@@ -34,8 +34,8 @@ class Database:
             author (str): The author of the fact.
             timestamp (str): The timestamp when the fact was added.
         """
-        self.cur.execute("INSERT INTO facts (fact, author, timestamp) VALUES (?, ?, ?)", (fact, author, timestamp))
-        self.con.commit()
+        self.__cur.execute("INSERT INTO facts (fact, author, timestamp) VALUES (?, ?, ?)", (fact, author, timestamp))
+        self.__con.commit()
 
     def get_facts(self) -> list:
         """
@@ -44,7 +44,7 @@ class Database:
         Returns:
             list: A list of tuples containing all facts in the database.
         """
-        return self.cur.execute("SELECT * FROM facts").fetchall()
+        return self.__cur.execute("SELECT * FROM facts").fetchall()
 
     def total_facts(self) -> int:
         """
@@ -53,7 +53,7 @@ class Database:
         Returns:
             int: The total number of facts.
         """
-        return self.cur.execute("SELECT COUNT(*) FROM facts").fetchone()[0]
+        return self.__cur.execute("SELECT COUNT(*) FROM facts").fetchone()[0]
 
     def get_fact(self, id: int) -> tuple:
         """
@@ -65,7 +65,7 @@ class Database:
         Returns:
             tuple: A tuple containing the fact with the specified ID.
         """
-        return self.cur.execute("SELECT * FROM facts WHERE id = ?", (id,)).fetchone()
+        return self.__cur.execute("SELECT * FROM facts WHERE id = ?", (id,)).fetchone()
 
     def update_fact(self, id: int, fact: str) -> None:
         """
@@ -75,5 +75,5 @@ class Database:
             id (int): The ID of the fact to update.
             fact (str): The new text of the fact.
         """
-        self.cur.execute("""UPDATE facts SET fact = ? WHERE id = ?""", (fact, id))
-        self.con.commit()
+        self.__cur.execute("""UPDATE facts SET fact = ? WHERE id = ?""", (fact, id))
+        self.__con.commit()
