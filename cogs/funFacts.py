@@ -61,7 +61,7 @@ class FunFacts(commands.Cog):
     @ff.command(name="update")
     async def ff_update(self, ctx, *args):
         if len(args) < 2:
-            await ctx.send("To use update use the format: `!ff update <id> <new fact>`")
+            return await ctx.send("To use update use the format: `!ff update <id> <new fact>`")
         try:
             id = int(args[0])
             if id < 0:
