@@ -52,26 +52,50 @@ class FunFacts(commands.Cog):
         author = ctx.message.author.name
         fact = str(ctx.message.content[9:])
 
-        embed = discord.Embed(title="Two approved users required for approval.", description=fact, color=0x00ff00)
+        await self.wait_for_reaction(ctx, fact, 0, f"Request to add fact.")
+        self.fact_bank.add_fact(fact, author, datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+        await ctx.send("Fact added by " + author)
+
+    @ff.command(name="update")
+    async def ff_update(self, ctx, *args):
+        if len(args) < 2:
+            await ctx.send("To use update use the format: `!ff update <id> <new fact>`")
+        try:
+            id = int(args[0])
+            if id < 0:
+                return await ctx.send("id must be a positive integer")
+        except ValueError as _:
+            return await ctx.send("Non-integer id")
+        if not args:
+            return await ctx.send("To use update use the format: `!ff update <id> <new fact>`")
+
+        fact = " ".join(ctx.message.content.split(" ")[3:])
+        await self.wait_for_reaction(ctx, fact, id, f"Request to update fact with id {id}.")
+
+        self.fact_bank.update_fact(id, fact)
+        await ctx.send(f"Entry updated.")
+
+    async def wait_for_reaction(self, ctx, fact, id, description):
+        embed = discord.Embed(title=description, description=fact, color=0x00ff00)
         message = await ctx.send(embed=embed)
 
         reaction_emoji = '👍'
         await message.add_reaction(reaction_emoji)
-        check = self.reaction_check(ctx, message, reaction_emoji)
+        check = await self.reaction_check(ctx, message, reaction_emoji)
         try:
             reactions_count = 0
             while reactions_count < 3:
                 reaction, user = await self.bot.wait_for('reaction_add', check=check)
                 reactions_count = reaction.count
 
-        except:
-            pass
-        self.fact_bank.add_fact(fact, author, datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
-        await ctx.send("Fact added by " + author)
+        except Exception as _:
+            await ctx.send(f"An error occurred. Please try again.")
+            return
+
         await message.delete()
 
-    def reaction_check(self, ctx, message, reaction_emoji):
-        async def check(reaction, user):
+    async def reaction_check(self, ctx, message, reaction_emoji):
+        def check(reaction, user):
             if reaction.message.id != message.id:
                 return False
             if user == self.bot.user:
@@ -91,6 +115,7 @@ class FunFacts(commands.Cog):
             else:
                 asyncio.create_task(reaction.remove(user))
                 return False
+
         return check
 
 

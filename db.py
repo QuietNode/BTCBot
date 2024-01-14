@@ -25,3 +25,7 @@ class Database:
 
     def get_fact(self, id: int):
         return self.cur.execute("SELECT * FROM facts WHERE id = ?", (id,)).fetchone()
+
+    def update_fact(self, id: int, fact: str):
+        self.cur.execute("""UPDATE facts SET fact = ? WHERE id = ?""", (fact, id))
+        self.con.commit()
