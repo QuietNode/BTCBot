@@ -10,7 +10,7 @@ class Database:
         cur (sqlite3.Cursor): Cursor object used to execute SQL commands.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initializes the Database class by connecting to the SQLite database
         and creating the 'facts' table if it does not exist.
@@ -25,7 +25,7 @@ class Database:
             timestamp TEXT
         )""")
 
-    def add_fact(self, fact: str, author: str, timestamp: str):
+    def add_fact(self, fact: str, author: str, timestamp: str) -> None:
         """
         Adds a new fact to the database.
 
@@ -37,7 +37,7 @@ class Database:
         self.cur.execute("INSERT INTO facts (fact, author, timestamp) VALUES (?, ?, ?)", (fact, author, timestamp))
         self.con.commit()
 
-    def get_facts(self):
+    def get_facts(self) -> list:
         """
         Retrieves all facts from the database.
 
@@ -46,7 +46,7 @@ class Database:
         """
         return self.cur.execute("SELECT * FROM facts").fetchall()
 
-    def total_facts(self):
+    def total_facts(self) -> int:
         """
         Counts the total number of facts in the database.
 
@@ -55,7 +55,7 @@ class Database:
         """
         return self.cur.execute("SELECT COUNT(*) FROM facts").fetchone()[0]
 
-    def get_fact(self, id: int):
+    def get_fact(self, id: int) -> tuple:
         """
         Retrieves a specific fact by its ID.
 
@@ -67,7 +67,7 @@ class Database:
         """
         return self.cur.execute("SELECT * FROM facts WHERE id = ?", (id,)).fetchone()
 
-    def update_fact(self, id: int, fact: str):
+    def update_fact(self, id: int, fact: str) -> None:
         """
         Updates the text of an existing fact.
 
