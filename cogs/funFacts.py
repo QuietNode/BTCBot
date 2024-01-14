@@ -52,7 +52,7 @@ class FunFacts(commands.Cog):
     @ff.command(name="add")
     async def ff_add(self, ctx):
         author = ctx.message.author.name
-        fact = str(ctx.message.content[9:])
+        fact = " ".join(ctx.message.content.split(" ")[2:])
 
         await self.wait_for_reaction(ctx, fact, 0, f"Request to add fact.")
         self.fact_bank.add_fact(fact, author, datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
