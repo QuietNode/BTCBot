@@ -29,9 +29,9 @@ class FunFacts(commands.Cog):
         await ctx.send(embed=embed)
 
     @ff.command(name="get")
-    async def fact(self, ctx, *args):
+    async def ff_get(self, ctx, *args):
         if len(args) == 0:
-            await ctx.send("To use fact use the format: `!fact <id>`")
+            await ctx.send("To use fact use the format: `!ff get <id>`")
         try:
             id = int(args[0])
             if id < 0:
