@@ -28,6 +28,20 @@ class FunFacts(commands.Cog):
         embed = discord.Embed(title=f"Fun Fact #{id} authored at {date} by {author}", description=fact, color=0x00ff00)
         await ctx.send(embed=embed)
 
+    @ff.command(name="help")
+    async def ff_help(self, ctx):
+        embed = discord.Embed(title=f"Fun Fact Help", description="Fun Fact Commands", color=0x00ff00)
+        embed.add_field(name="!ff", value="Get a random fact", inline=False)
+        embed.add_field(name="!ff read <id>", value="Get a fact by id", inline=False)
+        embed.add_field(name="!ff total", value="Get the total number of facts", inline=False)
+        embed.add_field(name="!ff create <fact>", value="Create a new fact", inline=False)
+        embed.add_field(name="!ff update <id> <fact>", value="Update a fact", inline=False)
+        embed.add_field(name="!ff delete <id>", value="Delete a fact", inline=False)
+        message = await ctx.send(embed=embed)
+
+        await asyncio.sleep(60)
+        await message.delete()
+
     @ff.command(name="read")
     async def ff_read(self, ctx, *args):
         if len(args) == 0:
