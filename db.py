@@ -34,6 +34,9 @@ class Database:
             author (str): The author of the fact.
             timestamp (str): The timestamp when the fact was added.
         """
+        fact_exists = self.__cur.execute("SELECT * FROM facts where fact = ?", (fact, )).fetchone()
+        if fact_exists:
+            return
         self.__cur.execute("INSERT INTO facts (fact, author, timestamp) VALUES (?, ?, ?)", (fact, author, timestamp))
         self.__con.commit()
 
