@@ -68,9 +68,6 @@ class Database:
         Returns:
             tuple: A tuple containing the fact with the specified ID.
         """
-        fact_list = self.__cur.execute("SELECT * FROM facts WHERE id = ?", (id,)).fetchone()
-        if fact_list is None:
-            return None, None, None, None
         return self.__cur.execute("SELECT * FROM facts WHERE id = ?", (id,)).fetchone()
 
     def update_fact(self, id: int, fact: str) -> None:
