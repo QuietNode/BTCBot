@@ -28,8 +28,8 @@ class FunFacts(commands.Cog):
         embed = discord.Embed(title=f"Fun Fact #{id} authored at {date} by {author}", description=fact, color=0x00ff00)
         await ctx.send(embed=embed)
 
-    @ff.command(name="get")
-    async def ff_get(self, ctx, *args):
+    @ff.command(name="read")
+    async def ff_read(self, ctx, *args):
         if len(args) == 0:
             await ctx.send("To use fact use the format: `!ff get <id>`")
         try:
@@ -49,8 +49,8 @@ class FunFacts(commands.Cog):
     async def ff_total(self, ctx):
         await ctx.send("There are " + str(self.fact_bank.total_facts()) + " facts in the database.")
 
-    @ff.command(name="add")
-    async def ff_add(self, ctx):
+    @ff.command(name="create")
+    async def ff_create(self, ctx):
         author = ctx.message.author.name
         fact = " ".join(ctx.message.content.split(" ")[2:])
 
