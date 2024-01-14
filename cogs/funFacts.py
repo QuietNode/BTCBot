@@ -17,7 +17,7 @@ class FunFacts(commands.Cog):
 
     def get_fact(self):
         while True:
-            bitcoin_fun_facts = self.fact_bank.get_facts()
+            bitcoin_fun_facts = self.fact_bank.read_facts()
             random.shuffle(bitcoin_fun_facts)
             for fact in bitcoin_fun_facts:
                 yield fact
@@ -38,7 +38,7 @@ class FunFacts(commands.Cog):
                 return await ctx.send("id must be a positive integer")
         except ValueError as _:
             return await ctx.send("Non-integer id")
-        fact_by_id = self.fact_bank.get_fact(id)
+        fact_by_id = self.fact_bank.read_fact(id)
         if fact_by_id is None:
             return await ctx.send("Fact not found")
         id, fact, author, date = fact_by_id
@@ -55,7 +55,7 @@ class FunFacts(commands.Cog):
         fact = " ".join(ctx.message.content.split(" ")[2:])
 
         await self.wait_for_reaction(ctx, fact, 0, f"Request to add fact.")
-        self.fact_bank.add_fact(fact, author, datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+        self.fact_bank.create_fact(fact, author, datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
         await ctx.send("Fact added by " + author)
 
     @ff.command(name="update")

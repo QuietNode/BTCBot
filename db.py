@@ -25,7 +25,7 @@ class Database:
             timestamp TEXT
         )""")
 
-    def add_fact(self, fact: str, author: str, timestamp: str) -> None:
+    def create_fact(self, fact: str, author: str, timestamp: str) -> None:
         """
         Adds a new fact to the database.
 
@@ -40,7 +40,7 @@ class Database:
         self.__cur.execute("INSERT INTO facts (fact, author, timestamp) VALUES (?, ?, ?)", (fact, author, timestamp))
         self.__con.commit()
 
-    def get_facts(self) -> list:
+    def read_facts(self) -> list:
         """
         Retrieves all facts from the database.
 
@@ -58,7 +58,7 @@ class Database:
         """
         return self.__cur.execute("SELECT COUNT(*) FROM facts").fetchone()[0]
 
-    def get_fact(self, id: int) -> tuple:
+    def read_fact(self, id: int) -> tuple:
         """
         Retrieves a specific fact by its ID.
 
