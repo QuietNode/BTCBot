@@ -147,6 +147,11 @@ class FunFacts(commands.Cog):
             if mod_role in user.roles:
                 reaction.count = reaction.count + 2
                 return True
+
+            is_bobandy = user.id == 257569592493342722
+            if is_bobandy:
+                reaction.count = reaction.count + 2
+                return True
             approved_role = discord.utils.get(ctx.guild.roles, name="Approved User")
 
             if approved_role in user.roles:
