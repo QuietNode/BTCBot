@@ -49,6 +49,10 @@ async def setup_hook() -> None:
 		await bot.load_extension("cogs.{0}".format(cog_name))
 
 @bot.event
+async def on_command_error(ctx, _) -> None:
+	await ctx.send("Invalid command, use !help for a list of commands")
+
+@bot.event
 async def on_message(message):
 	#handle public channels
 	if(str(message.channel.type) != "private"):
