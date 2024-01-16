@@ -13,14 +13,15 @@ class FunFacts(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.fact_generator = self.get_fact()
-        self.fact_bank = Database()
+        self.fact_bank = Database("facts")
 
     def get_fact(self):
-        while True:
-            bitcoin_fun_facts = self.fact_bank.read_facts()
-            random.shuffle(bitcoin_fun_facts)
-            for fact in bitcoin_fun_facts:
-                yield fact
+        with self.fact_bank as bank:
+            while True:
+                bitcoin_fun_facts = bank.read_all()
+                random.shuffle(bitcoin_fun_facts)
+                for fact in bitcoin_fun_facts:
+                    yield fact
 
     @commands.group(invoke_without_command=True)
     async def ff(self, ctx):
@@ -33,7 +34,7 @@ class FunFacts(commands.Cog):
         embed = discord.Embed(title=f"Fun Fact Help", description="Fun Fact Commands", color=0x00ff00)
         embed.add_field(name="!ff", value="Get a random fact", inline=False)
         embed.add_field(name="!ff read <id>", value="Get a fact by id", inline=False)
-        embed.add_field(name="!ff total", value="Get the total number of facts", inline=False)
+        embed.add_field(name="!ff count", value="Get the total number of facts", inline=False)
         embed.add_field(name="!ff create <fact>", value="Create a new fact", inline=False)
         embed.add_field(name="!ff update <id> <fact>", value="Update a fact", inline=False)
         embed.add_field(name="!ff delete <id>", value="Delete a fact", inline=False)
@@ -52,16 +53,18 @@ class FunFacts(commands.Cog):
                 return await ctx.send("id must be a positive integer")
         except ValueError as _:
             return await ctx.send("Non-integer id")
-        fact_by_id = self.fact_bank.read_fact(id)
-        if fact_by_id is None:
-            return await ctx.send("Fact not found")
-        id, fact, author, date = fact_by_id
-        embed = discord.Embed(title=f"Fun Fact #{id} authored at {date} by {author}", description=fact, color=0x00ff00)
-        await ctx.send(embed=embed)
+        with self.fact_bank as bank:
+            fact_by_id = bank.read(id)
+            if fact_by_id is None:
+                return await ctx.send("Fact not found")
+            id, fact, author, date = fact_by_id
+            embed = discord.Embed(title=f"Fun Fact #{id} authored at {date} by {author}", description=fact, color=0x00ff00)
+            await ctx.send(embed=embed)
 
-    @ff.command(name="total")
-    async def ff_total(self, ctx):
-        await ctx.send("There are " + str(self.fact_bank.total_facts()) + " facts in the database.")
+    @ff.command(name="count")
+    async def ff_count(self, ctx):
+        with self.fact_bank as bank:
+            await ctx.send("There are " + str(bank.count()) + " facts in the database.")
 
     @ff.command(name="create")
     async def ff_create(self, ctx):
@@ -69,8 +72,9 @@ class FunFacts(commands.Cog):
         fact = " ".join(ctx.message.content.split(" ")[2:])
 
         await self.wait_for_reaction(ctx, fact, 0, f"Request to add fact.")
-        self.fact_bank.create_fact(fact, author, datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
-        await ctx.send("Fact added by " + author)
+        with self.fact_bank as bank:
+            bank.create(fact, author, datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+            await ctx.send("Fact added by " + author)
 
     @ff.command(name="update")
     async def ff_update(self, ctx, *args):
@@ -87,9 +91,9 @@ class FunFacts(commands.Cog):
 
         fact = " ".join(ctx.message.content.split(" ")[3:])
         await self.wait_for_reaction(ctx, fact, id, f"Request to update fact with id {id}.")
-
-        self.fact_bank.update_fact(id, fact)
-        await ctx.send(f"Entry updated.")
+        with self.fact_bank as bank:
+            bank.update(id, fact)
+            await ctx.send(f"Entry updated.")
 
     @ff.command(name="delete")
     async def ff_delete(self, ctx, *args):
@@ -106,8 +110,9 @@ class FunFacts(commands.Cog):
 
         await self.wait_for_reaction(ctx, "", id, f"Request to delete fact with id {id}.")
 
-        self.fact_bank.delete_fact(id)
-        await ctx.send(f"Entry deleted.")
+        with self.fact_bank as bank:
+            bank.delete(id)
+            await ctx.send(f"Entry deleted.")
 
     async def wait_for_reaction(self, ctx, fact, id, description):
         embed = discord.Embed(title=description, description=fact, color=0x00ff00)
