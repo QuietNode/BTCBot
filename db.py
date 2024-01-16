@@ -5,18 +5,14 @@ from repository import Repository
 
 class Database(Repository):
     """
-    A class used to interact with the database containing {self._table}.
+    A class used to interact with the database containing facts.
 
     Attributes:
-        con (sqlite3.Connection): Connection to the SQLite database.
-        cur (sqlite3.Cursor): Cursor object used to execute SQL commands.
+        _con (sqlite3.Connection): Connection to the SQLite database.
+        _cur (sqlite3.Cursor): Cursor object used to execute SQL commands.
     """
 
     def __init__(self, table) -> None:
-        """
-        Initializes the Database class by connecting to the SQLite database
-        and creating the '{self._table}' table if it does not exist.
-        """
         super().__init__(table)
         
     def create_table(self) -> None:
@@ -43,19 +39,19 @@ class Database(Repository):
 
     def read_all(self) -> list:
         """
-        Retrieves all {self._table} from the database.
+        Retrieves all facts from the database.
 
         Returns:
-            list: A list of tuples containing all {self._table} in the database.
+            list: A list of tuples containing all facts in the database.
         """
         return self._cur.execute(f"SELECT * FROM {self._table}").fetchall()
 
     def count(self) -> int:
         """
-        Counts the total number of {self._table} in the database.
+        Counts the total number of facts in the database.
 
         Returns:
-            int: The total number of {self._table}.
+            int: The total number of facts.
         """
         return self._cur.execute(f"SELECT COUNT(*) FROM {self._table}").fetchone()[0]
 
