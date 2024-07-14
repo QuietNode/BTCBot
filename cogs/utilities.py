@@ -127,7 +127,8 @@ class Utilities(commands.Cog):
 			"mycelium": {"tags": ["android", "ios", "hot", "local-trader"], "link":"https://wallet.mycelium.com/"},
 			"seedsigner": {"tags": ["hardware", "airgap", "diy", "cold", "recommended"], "link":"https://seedsigner.com/"},
 			"yeticold": {"tags": ["hardware", "airgap", "diy", "cold", "recommended"], "link":"https://yeticold.com/"},
-			"glacier-protocol": {"tags": ["hardware", "airgap", "diy", "cold"], "link":"https://glacierprotocol.org/"},
+            		"glacier-protocol": {"tags": ["hardware", "airgap", "diy", "cold"], "link":"https://glacierprotocol.org/"},
+            		"Krux": {"tags": ["hardware", "airgap", "diy", "cold"], "link":"https://selfcustody.github.io/krux/"},
 			"breez": {"tags": ["android", "ios", "hot", "lightning", "easy"], "link":"https://breez.technology/"},
 			"wallet-of-satoshi": {"tags": ["android", "ios", "hot", "lightning", "partial-custody", "easy"], "link":"https://www.walletofsatoshi.com/"},
 			"liana": {"tags": ["pc", "mac", "windows", "linux", "hot", "timelocks", "multisig", "cold", "easy", "advanced"], "link":"https://wizardsardine.com/liana/"},
@@ -176,11 +177,26 @@ class Utilities(commands.Cog):
 		if hasattr(ctx.message.author, 'roles') and any(role.name == os.getenv('MOD_ROLE') for role in ctx.message.author.roles):
 			n=0
 			for user in ctx.message.mentions:
-				await user.ban()
-				n = n+1
+				if hasattr(user, 'roles') and any(role.name == os.getenv('MOD_ROLE') for role in user.roles):
+					await ctx.channel.send("Can't ban mods")
+				else:
+					await user.ban()
+					n = n+1
+			for arg in args:
+				userMention = re.search("([0-9]*)",arg)
+				if userMention:
+					user = await self.bot.fetch_user(int(arg))
+					if hasattr(user, 'roles') and any(role.name == os.getenv('MOD_ROLE') for role in user.roles):
+						await ctx.channel.send("Can't ban mods")
+					elif user != None:
+						await ctx.guild.ban(user)
+						n = n+1
 			await ctx.channel.send(str(n) + " users banned")
+
 		else:
 			await ctx.channel.send("No permission.")
+
+	
 
 	@commands.command()
 	async def banafter(self, ctx, *args):
@@ -189,8 +205,11 @@ class Utilities(commands.Cog):
 			start = (await ctx.fetch_message(args[0])).created_at
 			end = datetime.datetime.now(tz=None) if len(args) < 2 else (await ctx.fetch_message(args[1])).created_at
 			for message in await ctx.message.channel.history(after=start, before=end).flatten():
-				await ctx.guild.ban(message.author)
-				n = n+1
+				if hasattr(message.author, 'roles') and any(role.name == os.getenv('MOD_ROLE') for role in message.author.roles):
+					await ctx.channel.send("Can't ban mods")
+				else:
+					await ctx.guild.ban(message.author)
+					n = n+1
 			await ctx.channel.send(str(n) + " users banned")
 		else:
 			await ctx.channel.send("No permission.")
@@ -366,7 +385,9 @@ The tip of the mempool ({range01}MB) ranges between {range0bottomMB} sat/vbyte a
 	async def total(self, ctx, *args):
 		api = "https://blockchain.info/q/totalbc"
 		r = requests.get(api)
-		await ctx.send("There are " + '{:,.0f}'.format(int(r.text)/100000000) + " BTC in circulation.")
+		totalCoins = int(r.text)/100000000
+		percentMined = totalCoins / 21000000 * 100
+		await ctx.send("There are " + '{:,.0f}'.format(totalCoins) + " BTC in circulation. " + '{:,.5f}'.format(percentMined) + "% of all bitcoin have been mined. Only " + '{:,.5f}'.format(100 - percentMined) + "% remain to be mined." )
 
 
 	# Fetches Bitcoin mempool info from blockstreams mempool
@@ -420,7 +441,7 @@ Very Low Priority (144 blocks+/1d+) = {vlow} sat/vbyte
 	@commands.command()
 	async def tipUser(self, ctx, user: discord.User, amount, *args):
 		member = ctx.message.author
-		msg = '{"action":"new_invoice", "id":"' + str(user.id) + '", "requestId":"' + str(member.id) + '", "amount":' + str(amount) + ', "memo":"Bitcoin discord user ' + member.name + ' to ' + user.name + '"'
+		msg = '{"action":"new_invoice", "id":"' + str(user.id) + '", "requestId":"' + str(member.id) + '", "amount":' + str(amount) + ', "memo":"Bitcoin discord user ' + member.name + ' to ' + user.name + ': ' + " ".join(args) + '"'
 		btc = False
 		ln = False
 		if "btc" in args or ("btc" not in args and "ln" not in args):

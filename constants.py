@@ -12,7 +12,7 @@ CURRENCY_FORMAT_DICT = {
     "rub": "₽{:,.2f} Russian Rubles",
     "xau": "{:,.2f} ounces of gold",
     "xag": "{:,.2f} ounces of silver",
-	"btc": "{:,.0f} Bitcoin"
+	"btc": "{:,.0f} bitcoin"
 }
 
 ITEM_DICT = {
@@ -180,6 +180,18 @@ ITEM_DICT = {
         "name": "British banking bailout",
         "emoji": ":flag_gb: :bank:",
         "single": True,
+    },
+    "osrs": {
+        "cost": 0.0000002,
+        "name": "Oldschool Runescape GP",
+        "emoji": ":crossed_swords:",
+        "single": False,
+    },
+    "m&c": {
+        "cost": 2.69,
+        "name": "mac & cheese boxes",
+        "emoji": ":cheese:",
+        "single": False,
     },
 }
 
