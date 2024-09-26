@@ -50,6 +50,18 @@ async def setup_hook() -> None:
 
 @bot.event
 async def on_message(message):
+	list_of_links = ["discordapp.com", "discord.gg"]
+	allowed_roles = ["Approved User", "mod"]
+
+	if any(link in message.content for link in list_of_links):
+		if not any(role.name in allowed_roles for role in message.author.roles):
+			report_channel_name = os.getenv('REPORT_CHANNEL')
+			report_channel = discord.utils.get(message.guild.channels, name=report_channel_name)
+			if report_channel and message.channel.id != report_channel.id:
+				msg = f"Discord invite removed from *{message.channel.name}*: *{message.content}* - by *{message.author.mention}*"
+				await message.delete()
+				await report_channel.send(msg)
+
 	#handle public channels
 	if(str(message.channel.type) != "private"):
 		if(message.channel.name == "new-joins"):
